@@ -300,10 +300,10 @@
         <nav class="container mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-bold heading-font text-pink-700">For Geet ❤️</h1>
             <div class="space-x-4">
-                <a href="#" onclick="showSection('home')" class="text-lg font-medium hover:text-pink-600 transition-colors">Home</a>
-                <a href="#" onclick="showSection('wall')" class="text-lg font-medium hover:text-pink-600 transition-colors">Post-it Wall</a>
-                <a href="#" onclick="showSection('photos')" class="text-lg font-medium hover:text-pink-600 transition-colors">Photo Album</a>
-                <a href="#" onclick="showSection('calendar')" class="text-lg font-medium hover:text-pink-600 transition-colors">Calendar</a>
+                <a href="#" data-section="home" class="text-lg font-medium hover:text-pink-600 transition-colors">Home</a>
+                <a href="#" data-section="wall" class="text-lg font-medium hover:text-pink-600 transition-colors">Post-it Wall</a>
+                <a href="#" data-section="photos" class="text-lg font-medium hover:text-pink-600 transition-colors">Photo Album</a>
+                <a href="#" data-section="calendar" class="text-lg font-medium hover:text-pink-600 transition-colors">Calendar</a>
                 <a href="mailto:geet.nuniwal@example.com" class="text-lg font-medium hover:text-pink-600 transition-colors">Contact</a>
             </div>
         </nav>
@@ -498,7 +498,7 @@
                     
                     postElement.innerHTML = `
                         <div class="text-lg leading-relaxed text-gray-800">${formattedText}</div>
-                        <span class="absolute bottom-2 left-2 text-xs text-gray-500">Posted by: ~Aditya</span>
+                        <span class="absolute bottom-2 left-2 text-xs text-gray-500">Posted by: Aditya</span>
                         <span class="absolute bottom-2 right-2 text-xs text-gray-500">${new Date(post.timestamp).toLocaleDateString()}</span>
                         <button class="delete-btn absolute top-2 right-2" onclick="deletePost('${doc.id}')">✖️</button>
                     `;
@@ -847,4 +847,92 @@
                 setupLightbox();
             } catch (err) {
                 console.error(err);
-                document.getElementById("gdrive-list").innerHTML = "<p>
+                document.getElementById("gdrive-list").innerHTML = "<p>Error loading files. Please ensure the folder is publicly accessible and the API key is correct.</p>";
+            }
+        }
+
+        function openLightbox(index) {
+            const file = galleryFiles[index];
+            if (!file) return;
+
+            currentIndex = index;
+            const lightbox = document.getElementById("lightbox");
+            const inner = document.getElementById("lightbox-inner");
+
+            lightbox.style.display = "flex";
+
+            if (file.mimeType.startsWith("image/")) {
+                inner.innerHTML = `<img src="https://drive.google.com/uc?export=view&id=${file.id}" alt="">`;
+            } else if (file.mimeType === "application/pdf") {
+                inner.innerHTML = `<iframe src="https://drive.google.com/file/d/${file.id}/preview" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>`;
+            }
+        }
+
+        function setupLightbox() {
+            const lightbox = document.getElementById("lightbox");
+            const closeBtn = document.querySelector(".lightbox-close");
+            const prevBtn = document.querySelector(".lightbox-prev");
+            const nextBtn = document.querySelector(".lightbox-next");
+
+            document.querySelectorAll("#gdrive-list a").forEach(link => {
+                link.addEventListener("click", e => {
+                    const type = link.dataset.type;
+                    const index = parseInt(link.dataset.index, 10);
+
+                    if (type && (type.startsWith("image/") || type === "application/pdf")) {
+                        e.preventDefault();
+                        openLightbox(index);
+                    }
+                });
+            });
+
+            closeBtn.onclick = () => {
+                lightbox.style.display = "none";
+                document.getElementById("lightbox-inner").innerHTML = "";
+            };
+
+            prevBtn.onclick = () => {
+                currentIndex = (currentIndex - 1 + galleryFiles.length) % galleryFiles.length;
+                openLightbox(currentIndex);
+            };
+
+            nextBtn.onclick = () => {
+                currentIndex = (currentIndex + 1) % galleryFiles.length;
+                openLightbox(currentIndex);
+            };
+
+            lightbox.onclick = e => {
+                if (e.target === lightbox) {
+                    lightbox.style.display = "none";
+                    document.getElementById("lightbox-inner").innerHTML = "";
+                }
+            };
+
+            document.addEventListener("keydown", e => {
+                if (lightbox.style.display === "flex") {
+                    if (e.key === "ArrowLeft") prevBtn.click();
+                    if (e.key === "ArrowRight") nextBtn.click();
+                    if (e.key === "Escape") closeBtn.click();
+                }
+            });
+        }
+        
+        // This new function sets up the navigation events using JavaScript
+        const setupNavigationEvents = () => {
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = e.target.getAttribute('data-section');
+                    if (sectionId) {
+                        showSection(sectionId);
+                    }
+                });
+            });
+        };
+
+        initFirebase();
+        setupNavigationEvents();
+    </script>
+</body>
+
+</html>
