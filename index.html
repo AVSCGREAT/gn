@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Website for Geet Nuniwal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #fce4ec;
+            --secondary-color: #f8bbd0;
+            --accent-color: #e91e63;
+            --text-color: #4a148c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .heading-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .container {
+            max-width: 1000px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .post-it {
+            background-color: #ffeb3b;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        /* Remove the random rotation to keep them consistent */
+        .post-it:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #d11a2a;
+            cursor: pointer;
+            font-size: 1.25rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.25rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .delete-btn:hover, .edit-btn:hover {
+            opacity: 1;
+        }
+
+        .reminder-item {
+            position: relative;
+        }
+
+        .reminder-item.is-close {
+            background-color: #fff1f2;
+            border-left: 5px solid #ef4444;
+        }
+        
+        .gdrive-container {
+            margin: 20px 0;
+        }
+        .gdrive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+        .gdrive-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+            padding: 10px;
+            transition: transform 0.2s ease;
+        }
+        .gdrive-item:hover {
+            transform: translateY(-4px);
+        }
+        .gdrive-item img {
+            max-width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .gdrive-item a {
+            text-decoration: none;
+            color: #1a73e8;
+            font-weight: 600;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        .lightbox-content iframe,
+        .lightbox-content img {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .lightbox-close,
+        .lightbox-prev,
+        .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            user-select: none;
+        }
+        .lightbox-close {
+            top: 20px;
+            right: 30px;
+            font-size: 32px;
+            transform: none;
+        }
+        .lightbox-prev { left: -60px; }
+        .lightbox-next { right: -60px; }
+        
+        /* New Calendar styles */
+        .calendar-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .calendar-nav-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .calendar-nav-btn:hover {
+            transform: scale(1.1);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            text-align: center;
+        }
+        .calendar-day-header {
+            font-weight: 700;
+            color: #6d28d9;
+        }
+        .calendar-day {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .calendar-day.current-month {
+            background-color: #fce4ec;
+            cursor: pointer;
+        }
+        .calendar-day.current-month:hover {
+            background-color: #f8bbd0;
+        }
+        .calendar-day.has-reminder {
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .calendar-day.has-reminder:after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #ffeb3b;
+            border-radius: 50%;
+        }
+        .calendar-day.has-reminder.current-month:hover {
+            background-color: #c2185b;
+        }
+        .calendar-day.today {
+            border: 2px solid var(--text-color);
+        }
+        
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+        .modal-content {
+            background-color: var(--primary-color);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <header class="p-6 bg-secondary-color shadow-md">
+        <nav class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold heading-font text-pink-700">For Geet ❤️</h1>
+            <div class="space-x-4">
+                <a href="#" onclick="showSection('home')" class="text-lg font-medium hover:text-pink-600 transition-colors">Home</a>
+                <a href="#" onclick="showSection('wall')" class="text-lg font-medium hover:text-pink-600 transition-colors">Post-it Wall</a>
+                <a href="#" onclick="showSection('photos')" class="text-lg font-medium hover:text-pink-600 transition-colors">Photo Album</a>
+                <a href="#" onclick="showSection('calendar')" class="text-lg font-medium hover:text-pink-600 transition-colors">Calendar</a>
+                <a href="mailto:geet.nuniwal@example.com" class="text-lg font-medium hover:text-pink-600 transition-colors">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow p-8">
+        <div id="home" class="container mx-auto px-4 py-16 text-center">
+            <div class="card max-w-2xl mx-auto">
+                <h2 class="text-5xl font-bold mb-4 heading-font text-pink-700">My Dearest Geet Nuniwal,</h2>
+                <p class="text-lg mb-6">This little corner of the internet is dedicated entirely to you. It's a place to celebrate all the wonderful moments we share and to look forward to all the new ones. You are my everything, my muse, and my greatest adventure. Every part of this website is for you and about you.</p>
+                
+                <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">Loading...</span></p>
+            </div>
+        </div>
+
+        <div id="wall" class="hidden container mx-auto px-4 py-16">
+            <div class="card mb-8">
+                <h2 class="text-4xl font-bold mb-4 heading-font text-pink-700">The Post-it Wall</h2>
+                <p class="text-lg text-gray-700 mb-6">Leave a poem, a sweet message, or a random thought for Geet here. It's a wall of love, just for her.</p>
+                <form id="postForm" class="flex flex-col space-y-4">
+                    <textarea id="postText" placeholder="Write your message here... (Markdown formatting like **bold** and *italics* is supported)" class="w-full p-4 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all resize-y" rows="4"></textarea>
+                    <button type="submit" class="btn-primary self-end">Post It! ✨</button>
+                </form>
+            </div>
+            <div id="postsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Post-it notes will be rendered here -->
+            </div>
+        </div>
+
+        <div id="photos" class="hidden container mx-auto px-4 py-16">
+            <div id="passwordForm" class="card max-w-xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-4 heading-font text-pink-700">Enter Password</h2>
+                <p class="text-lg text-gray-700 mb-6">This area is just for you. Please enter the password to view the photo album.</p>
+                <form id="photoPasswordForm" class="flex flex-col space-y-4">
+                    <div class="relative w-full">
+                        <input type="password" id="passwordInput" placeholder="Password..." class="w-full p-4 pr-12 text-center rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all">
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-pink-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="passwordError" class="text-red-500 text-sm hidden">Incorrect password. Please try again.</p>
+                    <button type="submit" class="btn-primary self-center">Unlock Album</button>
+                </form>
+            </div>
+            
+            <div id="photoAlbumContent" class="hidden">
+                <div class="card mb-8">
+                    <h2 class="text-4xl font-bold mb-4 heading-font text-pink-700">Private Photo Album</h2>
+                    <p class="text-lg text-gray-700 mb-6 font-bold">This album displays a live view of the Google Drive folder.</p>
+                </div>
+                <!-- Google Drive Folder Embed with Gallery Lightbox -->
+                <div class="gdrive-container card !p-0">
+                    <div id="gdrive-list" class="gdrive-grid">Loading...</div>
+                </div>
+
+                <!-- Lightbox -->
+                <div id="lightbox" class="lightbox">
+                    <span class="lightbox-close">&times;</span>
+                    <div class="lightbox-content">
+                        <span class="lightbox-prev">&#10094;</span>
+                        <span class="lightbox-next">&#10095;</span>
+                        <div id="lightbox-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="calendar" class="hidden container mx-auto px-4 py-16">
+            <div class="card mb-8 text-center flex flex-col items-center">
+                <h2 class="text-4xl font-bold mb-4 heading-font text-pink-700">Important Dates</h2>
+                <p class="text-lg text-gray-700 mb-6">A place for birthdays, anniversaries, and other special reminders just for Geet.</p>
+                <button id="openReminderModal" class="btn-primary">Manage Reminders 🗓️</button>
+            </div>
+            
+            <div id="calendar-container" class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month-btn" class="calendar-nav-btn">&#10094;</button>
+                    <h3 id="current-month-year" class="text-3xl font-bold heading-font"></h3>
+                    <button id="next-month-btn" class="calendar-nav-btn">&#10095;</button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    <!-- Calendar days will be rendered here -->
+                </div>
+                <div id="reminder-details" class="mt-8">
+                    <!-- Reminder details will be rendered here on day click -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="reminderModal" class="modal hidden">
+        <div class="modal-content">
+            <button id="closeReminderModal" class="modal-close-btn">&times;</button>
+            <h2 id="modal-title" class="text-3xl font-bold mb-4 heading-font text-pink-700">Add a New Reminder</h2>
+            <form id="reminderForm" class="flex flex-col space-y-4 mb-8">
+                <input type="text" id="reminderName" placeholder="Reminder name (e.g., Anniversary)" class="w-full p-4 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all">
+                <input type="date" id="reminderDate" class="w-full p-4 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all">
+                <textarea id="reminderDetails" placeholder="Add more details here..." class="w-full p-4 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all resize-y" rows="3"></textarea>
+                <button type="submit" id="reminderFormBtn" class="btn-primary self-end">Add Reminder 🗓️</button>
+            </form>
+            
+            <h3 class="text-2xl font-bold mb-4">Upcoming Reminders</h3>
+            <div id="remindersContainer" class="flex flex-col space-y-4">
+                <!-- Reminders will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="p-4 text-center text-sm text-gray-600 bg-secondary-color mt-auto">
+        Made with love for Geet Nuniwal ❤️
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId;
+        let privatePath;
+        let isPhotosUnlocked = false;
+        let allReminders = [];
+        let currentCalendarDate = new Date();
+        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let editingReminderId = null;
+
+        // Function to initialize Firebase
+        const initFirebase = async () => {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        privatePath = `/artifacts/${appId}/users/${userId}`;
+                        document.getElementById('userId').textContent = userId;
+                        console.log("User signed in:", userId);
+                        setupRealtimeListeners();
+                        setInterval(updateReminderListCountdown, 60000);
+                    } else {
+                        console.log("User signed out.");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+            }
+        };
+
+        const setupRealtimeListeners = () => {
+            const postsCol = collection(db, `${privatePath}/posts`);
+            onSnapshot(postsCol, (snapshot) => {
+                const postsContainer = document.getElementById('postsContainer');
+                postsContainer.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const post = doc.data();
+                    const postElement = document.createElement('div');
+                    postElement.className = `post-it p-6 rounded-lg shadow-lg relative min-h-[150px]`;
+                    
+                    const formattedText = marked.parse(post.text);
+                    
+                    postElement.innerHTML = `
+                        <div class="text-lg leading-relaxed text-gray-800">${formattedText}</div>
+                        <span class="absolute bottom-2 right-2 text-xs text-gray-500">${new Date(post.timestamp).toLocaleDateString()}</span>
+                        <button class="delete-btn absolute top-2 right-2" onclick="deletePost('${doc.id}')">✖️</button>
+                    `;
+                    postsContainer.appendChild(postElement);
+                });
+            });
+
+            const remindersCol = collection(db, `${privatePath}/reminders`);
+            onSnapshot(remindersCol, (snapshot) => {
+                allReminders = [];
+                snapshot.forEach((doc) => {
+                    allReminders.push({ id: doc.id, ...doc.data() });
+                });
+                
+                updateReminderList();
+                updateCalendar();
+            });
+        };
+
+        const updateReminderList = () => {
+            const remindersContainer = document.getElementById('remindersContainer');
+            remindersContainer.innerHTML = '';
+            const sortedReminders = [...allReminders].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            sortedReminders.forEach((reminder) => {
+                const reminderElement = document.createElement('div');
+                reminderElement.id = `reminder-list-item-${reminder.id}`;
+                reminderElement.className = `reminder-item p-4 bg-white rounded-lg flex justify-between items-center shadow-sm relative`;
+                remindersContainer.appendChild(reminderElement);
+            });
+            updateReminderListCountdown();
+        }
+
+        const updateReminderListCountdown = () => {
+            const today = new Date();
+            const reminderElements = document.querySelectorAll('.reminder-item');
+            reminderElements.forEach(async (element) => {
+                const docId = element.id.replace('reminder-list-item-', '');
+                const reminder = allReminders.find(r => r.id === docId);
+                
+                if (reminder) {
+                    const reminderDate = new Date(reminder.date);
+                    const diffTime = reminderDate.getTime() - today.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    let countdownText;
+                    let isClose = false;
+
+                    if (diffDays === 0) {
+                        countdownText = "Today! ❤️";
+                    } else if (diffDays > 0) {
+                        countdownText = `${diffDays} day${diffDays !== 1 ? 's' : ''} away`;
+                        if (diffDays <= 7) {
+                            isClose = true;
+                        }
+                    } else {
+                        countdownText = "Passed";
+                    }
+
+                    element.classList.toggle('is-close', isClose);
+                    element.innerHTML = `
+                        <div>
+                            <p class="font-bold text-lg">${reminder.name}</p>
+                            <p class="text-sm text-gray-600">${new Date(reminder.date).toLocaleDateString()}</p>
+                            ${reminder.details ? `<p class="text-xs text-gray-500">${reminder.details}</p>` : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <p class="font-bold text-base ${isClose ? 'text-red-500' : ''}">${countdownText}</p>
+                            <button class="edit-btn" onclick="editReminder('${docId}')">✏️</button>
+                            <button class="delete-btn" onclick="deleteReminder('${docId}')">✖️</button>
+                        </div>
+                    `;
+                } else {
+                    element.remove();
+                }
+            });
+        };
+
+        const updateCalendar = () => {
+            const calendarGrid = document.querySelector('#calendar-container .calendar-grid');
+            const monthYearHeader = document.getElementById('current-month-year');
+            const today = new Date();
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+
+            monthYearHeader.textContent = currentCalendarDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            // Clear old days, but keep day headers
+            const dayCells = calendarGrid.querySelectorAll('.calendar-day');
+            dayCells.forEach(cell => cell.remove());
+
+            // Add empty placeholders for the first week
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day';
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            // Add days of the month
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dayCell = document.createElement('div');
+                const cellDate = new Date(year, month, i);
+                dayCell.className = 'calendar-day current-month';
+                dayCell.textContent = i;
+                dayCell.dataset.date = cellDate.toISOString().split('T')[0];
+
+                const remindersOnThisDay = allReminders.filter(r => r.date === dayCell.dataset.date);
+                if (remindersOnThisDay.length > 0) {
+                    dayCell.classList.add('has-reminder');
+                    dayCell.dataset.reminders = JSON.stringify(remindersOnThisDay);
+                }
+
+                if (cellDate.toDateString() === today.toDateString()) {
+                    dayCell.classList.add('today');
+                }
+
+                dayCell.addEventListener('click', () => {
+                    showReminderDetails(dayCell.dataset.reminders);
+                });
+
+                calendarGrid.appendChild(dayCell);
+            }
+        };
+
+        const showReminderDetails = (remindersJson) => {
+            const detailsContainer = document.getElementById('reminder-details');
+            detailsContainer.innerHTML = '';
+            
+            if (remindersJson) {
+                const reminders = JSON.parse(remindersJson);
+                const list = document.createElement('ul');
+                list.className = 'bg-white p-4 rounded-lg shadow-sm';
+                reminders.forEach(r => {
+                    const item = document.createElement('li');
+                    item.className = 'font-bold';
+                    item.innerHTML = `
+                        <p>${r.name}</p>
+                        ${r.details ? `<p class="text-sm text-gray-500 font-normal">${r.details}</p>` : ''}
+                    `;
+                    list.appendChild(item);
+                });
+                detailsContainer.innerHTML = `<h4 class="text-xl font-bold mb-2">Reminders for this day:</h4>`;
+                detailsContainer.appendChild(list);
+            } else {
+                detailsContainer.innerHTML = `<p class="text-gray-600">No special reminders on this day.</p>`;
+            }
+        };
+        
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const postText = document.getElementById('postText').value;
+            if (postText.trim() === '') return;
+            try {
+                await addDoc(collection(db, `${privatePath}/posts`), {
+                    text: postText,
+                    timestamp: Date.now(),
+                });
+                document.getElementById('postText').value = '';
+            } catch (error) {
+                console.error("Error adding post:", error);
+            }
+        });
+
+        document.getElementById('reminderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const reminderName = document.getElementById('reminderName').value;
+            const reminderDate = document.getElementById('reminderDate').value;
+            const reminderDetails = document.getElementById('reminderDetails').value;
+            if (reminderName.trim() === '' || reminderDate.trim() === '') return;
+            
+            try {
+                if (editingReminderId) {
+                    // Update existing reminder
+                    await updateDoc(doc(db, `${privatePath}/reminders`, editingReminderId), {
+                        name: reminderName,
+                        date: reminderDate,
+                        details: reminderDetails
+                    });
+                } else {
+                    // Add new reminder
+                    await addDoc(collection(db, `${privatePath}/reminders`), {
+                        name: reminderName,
+                        date: reminderDate,
+                        details: reminderDetails,
+                        timestamp: Date.now(),
+                    });
+                }
+                resetReminderForm();
+            } catch (error) {
+                console.error("Error saving reminder:", error);
+            }
+        });
+        
+        const resetReminderForm = () => {
+            editingReminderId = null;
+            document.getElementById('reminderName').value = '';
+            document.getElementById('reminderDate').value = '';
+            document.getElementById('reminderDetails').value = '';
+            document.getElementById('modal-title').textContent = 'Add a New Reminder';
+            document.getElementById('reminderFormBtn').textContent = 'Add Reminder 🗓️';
+        };
+
+        window.editReminder = (reminderId) => {
+            const reminder = allReminders.find(r => r.id === reminderId);
+            if (reminder) {
+                editingReminderId = reminderId;
+                document.getElementById('reminderName').value = reminder.name;
+                document.getElementById('reminderDate').value = reminder.date;
+                document.getElementById('reminderDetails').value = reminder.details || '';
+                document.getElementById('modal-title').textContent = 'Edit Reminder';
+                document.getElementById('reminderFormBtn').textContent = 'Save Changes';
+                document.getElementById('reminderModal').classList.remove('hidden');
+            }
+        };
+
+        document.getElementById('photoPasswordForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            const errorElement = document.getElementById('passwordError');
+            if (password === '20062010') {
+                isPhotosUnlocked = true;
+                document.getElementById('passwordForm').classList.add('hidden');
+                document.getElementById('photoAlbumContent').classList.remove('hidden');
+                loadDriveFiles();
+                errorElement.classList.add('hidden');
+            } else {
+                errorElement.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('togglePassword').addEventListener('click', () => {
+            const passwordInput = document.getElementById('passwordInput');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        });
+
+        document.getElementById('openReminderModal').addEventListener('click', () => {
+            resetReminderForm();
+            document.getElementById('reminderModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeReminderModal').addEventListener('click', () => {
+            resetReminderForm();
+            document.getElementById('reminderModal').classList.add('hidden');
+        });
+
+        document.getElementById('reminderModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('reminderModal')) {
+                resetReminderForm();
+                document.getElementById('reminderModal').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('prev-month-btn').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            updateCalendar();
+        });
+
+        document.getElementById('next-month-btn').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            updateCalendar();
+        });
+
+        window.deletePost = async (postId) => {
+            try {
+                await deleteDoc(doc(db, `${privatePath}/posts`, postId));
+            } catch (error) {
+                console.error("Error deleting post:", error);
+            }
+        };
+
+        window.deleteReminder = async (reminderId) => {
+            try {
+                await deleteDoc(doc(db, `${privatePath}/reminders`, reminderId));
+            } catch (error) {
+                console.error("Error deleting reminder:", error);
+            }
+        };
+
+        window.showSection = function(sectionId) {
+            const sections = ['home', 'wall', 'photos', 'calendar'];
+            sections.forEach(id => {
+                const section = document.getElementById(id);
+                if (id === sectionId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            if (sectionId === 'photos') {
+                if (isPhotosUnlocked) {
+                    document.getElementById('passwordForm').classList.add('hidden');
+                    document.getElementById('photoAlbumContent').classList.remove('hidden');
+                } else {
+                    document.getElementById('passwordForm').classList.remove('hidden');
+                    document.getElementById('photoAlbumContent').classList.add('hidden');
+                }
+            }
+        };
+
+        const folderId = "1cWGugRJEeMFdy2pWzBYOfOyiyCcDM0VP";
+        const apiKey = "AIzaSyCjx0dAO-iphLAZxhGk_IhxAfNRC4bXaCE";
+        let galleryFiles = [];
+        let currentIndex = 0;
+
+        async function loadDriveFiles() {
+            try {
+                const res = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,thumbnailLink,iconLink)`
+                );
+                const data = await res.json();
+                const container = document.getElementById("gdrive-list");
+                container.innerHTML = "";
+
+                if (!data.files || data.files.length === 0) {
+                    container.innerHTML = "<p>No files found in this folder.</p>";
+                    return;
+                }
+
+                galleryFiles = data.files.filter(file =>
+                    file.mimeType.startsWith("image/") || file.mimeType === "application/pdf"
+                );
+
+                galleryFiles.forEach((file, index) => {
+                    const item = document.createElement("div");
+                    item.className = "gdrive-item";
+
+                    const thumb = file.thumbnailLink || file.iconLink;
+                    const viewUrl = `https://drive.google.com/file/d/${file.id}/view`;
+
+                    item.innerHTML = `
+                        <a href="${viewUrl}" target="_blank" data-id="${file.id}" data-type="${file.mimeType}" data-index="${index}">
+                            <img src="${thumb}" alt="${file.name}">
+                        </a>
+                        <a href="${viewUrl}" target="_blank" title="${file.name}" data-id="${file.id}" data-type="${file.mimeType}" data-index="${index}">
+                            ${file.name}
+                        </a>
+                    `;
+
+                    container.appendChild(item);
+                });
+
+                setupLightbox();
+            } catch (err) {
+                console.error(err);
+                document.getElementById("gdrive-list").innerHTML = "<p>Error loading files. Please ensure the folder is publicly accessible and the API key is correct.</p>";
+            }
+        }
+
+        function openLightbox(index) {
+            const file = galleryFiles[index];
+            if (!file) return;
+
+            currentIndex = index;
+            const lightbox = document.getElementById("lightbox");
+            const inner = document.getElementById("lightbox-inner");
+
+            lightbox.style.display = "flex";
+
+            if (file.mimeType.startsWith("image/")) {
+                inner.innerHTML = `<img src="https://drive.google.com/uc?export=view&id=${file.id}" alt="">`;
+            } else if (file.mimeType === "application/pdf") {
+                inner.innerHTML = `<iframe src="https://drive.google.com/file/d/${file.id}/preview" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>`;
+            }
+        }
+
+        function setupLightbox() {
+            const lightbox = document.getElementById("lightbox");
+            const closeBtn = document.querySelector(".lightbox-close");
+            const prevBtn = document.querySelector(".lightbox-prev");
+            const nextBtn = document.querySelector(".lightbox-next");
+
+            document.querySelectorAll("#gdrive-list a").forEach(link => {
+                link.addEventListener("click", e => {
+                    const type = link.dataset.type;
+                    const index = parseInt(link.dataset.index, 10);
+
+                    if (type && (type.startsWith("image/") || type === "application/pdf")) {
+                        e.preventDefault();
+                        openLightbox(index);
+                    }
+                });
+            });
+
+            closeBtn.onclick = () => {
+                lightbox.style.display = "none";
+                document.getElementById("lightbox-inner").innerHTML = "";
+            };
+
+            prevBtn.onclick = () => {
+                currentIndex = (currentIndex - 1 + galleryFiles.length) % galleryFiles.length;
+                openLightbox(currentIndex);
+            };
+
+            nextBtn.onclick = () => {
+                currentIndex = (currentIndex + 1) % galleryFiles.length;
+                openLightbox(currentIndex);
+            };
+
+            lightbox.onclick = e => {
+                if (e.target === lightbox) {
+                    lightbox.style.display = "none";
+                    document.getElementById("lightbox-inner").innerHTML = "";
+                }
+            };
+
+            document.addEventListener("keydown", e => {
+                if (lightbox.style.display === "flex") {
+                    if (e.key === "ArrowLeft") prevBtn.click();
+                    if (e.key === "ArrowRight") nextBtn.click();
+                    if (e.key === "Escape") closeBtn.click();
+                }
+            });
+        }
+
+        initFirebase();
+    </script>
+</body>
+
+</html>
