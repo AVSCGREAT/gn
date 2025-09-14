@@ -315,7 +315,7 @@
                 <h2 class="text-5xl font-bold mb-4 heading-font text-pink-700">My Dearest Geet Nuniwal,</h2>
                 <p class="text-lg mb-6">This little corner of the internet is dedicated entirely to you. It's a place to celebrate all the wonderful moments we share and to look forward to all the new ones. You are my everything, my muse, and my greatest adventure. Every part of this website is for you and about you.</p>
                 
-                <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">Loading...</span></p>
+                <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">gngf-8a92e</span></p>
             </div>
         </div>
 
@@ -339,7 +339,7 @@
                 <p class="text-lg text-gray-700 mb-6">This area is just for you. Please enter the password to view the photo album.</p>
                 <form id="photoPasswordForm" class="flex flex-col space-y-4">
                     <div class="relative w-full">
-                        <input type="password" id="passwordInput" placeholder="Password..." class="w-full p-4 pr-12 text-center rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all">
+                        <input type="password" id="passwordInput" placeholder="Password..." class="w-full p-4 pr-12 text-center rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-ring-pink-500 transition-all">
                         <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-pink-500">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -428,20 +428,26 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
         import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
-        // Global variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Your web app's Firebase configuration - HARDCODED as requested
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-nQc5UAE4DzSjduFSIgEELZvcVHsyNcQ",
+            authDomain: "gngf-8a92e.firebaseapp.com",
+            projectId: "gngf-8a92e",
+            storageBucket: "gngf-8a92e.firebasestorage.app",
+            messagingSenderId: "488025538378",
+            appId: "1:488025538378:web:88e05aa66aad93e56acbb3",
+            measurementId: "G-F2PLBD6FJC"
+        };
+        const hardcodedAppId = firebaseConfig.projectId;
 
         let app;
         let db;
         let auth;
-        let userId;
         let privatePath;
         let isPhotosUnlocked = false;
         let allReminders = [];
@@ -456,24 +462,19 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
                 
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                // Sign in anonymously for a unique user session
+                await signInAnonymously(auth);
+                const user = auth.currentUser;
+                const userId = user.uid;
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        privatePath = `/artifacts/${appId}/users/${userId}`;
-                        document.getElementById('userId').textContent = userId;
-                        console.log("User signed in:", userId);
-                        setupRealtimeListeners();
-                        setInterval(updateReminderListCountdown, 60000);
-                    } else {
-                        console.log("User signed out.");
-                    }
-                });
+                // For external use, we'll use a fixed path or user ID
+                // to make data persist without requiring this environment.
+                privatePath = `/artifacts/${hardcodedAppId}/public/data`;
+                
+                document.getElementById('userId').textContent = userId;
+                console.log("User signed in with anonymous ID:", userId);
+                setupRealtimeListeners();
+                setInterval(updateReminderListCountdown, 60000);
 
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
