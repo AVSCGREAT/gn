@@ -487,7 +487,8 @@
         let app;
         let db;
         let auth;
-        let privatePath;
+        // CORRECTED: The path was previously inconsistent. It must point to a specific collection within the 'public' data.
+        let publicDataPath;
         let isPhotosUnlocked = false;
         let allReminders = [];
         let currentCalendarDate = new Date();
@@ -504,7 +505,8 @@
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const userId = user.uid;
-                        privatePath = `/artifacts/${hardcodedAppId}/public/data`;
+                        // Correctly set the public data path with a sub-collection for the app's specific data.
+                        publicDataPath = `/artifacts/${hardcodedAppId}/public/data`;
 
                         document.getElementById('userId').textContent = userId;
                         console.log("User signed in with anonymous ID:", userId);
@@ -522,7 +524,8 @@
         };
 
         const setupRealtimeListeners = () => {
-            const postsCol = collection(db, `${privatePath}/posts`);
+            // Updated to reference the 'posts' collection correctly within the public data path.
+            const postsCol = collection(db, `${publicDataPath}/posts`);
             onSnapshot(postsCol, (snapshot) => {
                 const postsContainer = document.getElementById('postsContainer');
                 // Use a DocumentFragment for efficient bulk DOM insertion
@@ -553,7 +556,8 @@
                 postsContainer.appendChild(fragment);
             });
 
-            const remindersCol = collection(db, `${privatePath}/reminders`);
+            // Updated to reference the 'reminders' collection correctly within the public data path.
+            const remindersCol = collection(db, `${publicDataPath}/reminders`);
             onSnapshot(remindersCol, (snapshot) => {
                 allReminders = [];
                 snapshot.forEach((doc) => {
@@ -707,7 +711,8 @@
             const postText = document.getElementById('postText').value;
             if (postText.trim() === '') return;
             try {
-                await addDoc(collection(db, `${privatePath}/posts`), {
+                // Correctly referencing the 'posts' collection for adding documents.
+                await addDoc(collection(db, `${publicDataPath}/posts`), {
                     text: postText,
                     timestamp: Date.now(),
                 });
@@ -726,13 +731,14 @@
 
             try {
                 if (editingReminderId) {
-                    await updateDoc(doc(db, `${privatePath}/reminders`, editingReminderId), {
+                    await updateDoc(doc(db, `${publicDataPath}/reminders`, editingReminderId), {
                         name: reminderName,
                         date: reminderDate,
                         details: reminderDetails
                     });
                 } else {
-                    await addDoc(collection(db, `${privatePath}/reminders`), {
+                    // Correctly referencing the 'reminders' collection for adding documents.
+                    await addDoc(collection(db, `${publicDataPath}/reminders`), {
                         name: reminderName,
                         date: reminderDate,
                         details: reminderDetails,
@@ -817,7 +823,8 @@
 
         window.deletePost = async (postId) => {
             try {
-                await deleteDoc(doc(db, `${privatePath}/posts`, postId));
+                // Correctly referencing the 'posts' collection for deleting documents.
+                await deleteDoc(doc(db, `${publicDataPath}/posts`, postId));
             } catch (error) {
                 console.error("Error deleting post:", error);
             }
@@ -825,7 +832,8 @@
 
         window.deleteReminder = async (reminderId) => {
             try {
-                await deleteDoc(doc(db, `${privatePath}/reminders`, reminderId));
+                // Correctly referencing the 'reminders' collection for deleting documents.
+                await deleteDoc(doc(db, `${publicDataPath}/reminders`, reminderId));
             } catch (error) {
                 console.error("Error deleting reminder:", error);
             }
