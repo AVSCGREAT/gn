@@ -315,7 +315,7 @@
                 <h2 class="text-5xl font-bold mb-4 heading-font text-pink-700">My Dearest Geet Nuniwal,</h2>
                 <p class="text-lg mb-6">This little corner of the internet is dedicated entirely to you. It's a place to celebrate all the wonderful moments we share and to look forward to all the new ones. You are my everything, my muse, and my greatest adventure. Every part of this website is for you and about you.</p>
                 
-                <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">gngf-8a92e</span></p>
+                <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">Loading...</span></p>
             </div>
         </div>
 
@@ -428,9 +428,9 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
         // Your web app's Firebase configuration - HARDCODED as requested
@@ -462,19 +462,22 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
                 
-                // Sign in anonymously for a unique user session
-                await signInAnonymously(auth);
-                const user = auth.currentUser;
-                const userId = user.uid;
-
-                // For external use, we'll use a fixed path or user ID
-                // to make data persist without requiring this environment.
-                privatePath = `/artifacts/${hardcodedAppId}/public/data`;
-                
-                document.getElementById('userId').textContent = userId;
-                console.log("User signed in with anonymous ID:", userId);
-                setupRealtimeListeners();
-                setInterval(updateReminderListCountdown, 60000);
+                // Use onAuthStateChanged to ensure the user is signed in before trying to access data
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        const userId = user.uid;
+                        // The userId is used to identify the user, but the data path is public for sharing.
+                        privatePath = `/artifacts/${hardcodedAppId}/public/data`;
+                        
+                        document.getElementById('userId').textContent = userId;
+                        console.log("User signed in with anonymous ID:", userId);
+                        setupRealtimeListeners();
+                        setInterval(updateReminderListCountdown, 60000);
+                    } else {
+                        // Sign in anonymously if not already signed in.
+                        signInAnonymously(auth);
+                    }
+                });
 
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
@@ -495,6 +498,7 @@
                     
                     postElement.innerHTML = `
                         <div class="text-lg leading-relaxed text-gray-800">${formattedText}</div>
+                        <span class="absolute bottom-2 left-2 text-xs text-gray-500">Posted by: ~Aditya</span>
                         <span class="absolute bottom-2 right-2 text-xs text-gray-500">${new Date(post.timestamp).toLocaleDateString()}</span>
                         <button class="delete-btn absolute top-2 right-2" onclick="deletePost('${doc.id}')">✖️</button>
                     `;
@@ -558,7 +562,7 @@
                         <div>
                             <p class="font-bold text-lg">${reminder.name}</p>
                             <p class="text-sm text-gray-600">${new Date(reminder.date).toLocaleDateString()}</p>
-                            ${reminder.details ? `<p class="text-xs text-gray-500">${reminder.details}</p>` : ''}
+                            ${reminder.details ? `<p class="text-xs text-gray-500 font-normal">${reminder.details}</p>` : ''}
                         </div>
                         <div class="flex items-center space-x-2">
                             <p class="font-bold text-base ${isClose ? 'text-red-500' : ''}">${countdownText}</p>
@@ -843,78 +847,4 @@
                 setupLightbox();
             } catch (err) {
                 console.error(err);
-                document.getElementById("gdrive-list").innerHTML = "<p>Error loading files. Please ensure the folder is publicly accessible and the API key is correct.</p>";
-            }
-        }
-
-        function openLightbox(index) {
-            const file = galleryFiles[index];
-            if (!file) return;
-
-            currentIndex = index;
-            const lightbox = document.getElementById("lightbox");
-            const inner = document.getElementById("lightbox-inner");
-
-            lightbox.style.display = "flex";
-
-            if (file.mimeType.startsWith("image/")) {
-                inner.innerHTML = `<img src="https://drive.google.com/uc?export=view&id=${file.id}" alt="">`;
-            } else if (file.mimeType === "application/pdf") {
-                inner.innerHTML = `<iframe src="https://drive.google.com/file/d/${file.id}/preview" style="width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>`;
-            }
-        }
-
-        function setupLightbox() {
-            const lightbox = document.getElementById("lightbox");
-            const closeBtn = document.querySelector(".lightbox-close");
-            const prevBtn = document.querySelector(".lightbox-prev");
-            const nextBtn = document.querySelector(".lightbox-next");
-
-            document.querySelectorAll("#gdrive-list a").forEach(link => {
-                link.addEventListener("click", e => {
-                    const type = link.dataset.type;
-                    const index = parseInt(link.dataset.index, 10);
-
-                    if (type && (type.startsWith("image/") || type === "application/pdf")) {
-                        e.preventDefault();
-                        openLightbox(index);
-                    }
-                });
-            });
-
-            closeBtn.onclick = () => {
-                lightbox.style.display = "none";
-                document.getElementById("lightbox-inner").innerHTML = "";
-            };
-
-            prevBtn.onclick = () => {
-                currentIndex = (currentIndex - 1 + galleryFiles.length) % galleryFiles.length;
-                openLightbox(currentIndex);
-            };
-
-            nextBtn.onclick = () => {
-                currentIndex = (currentIndex + 1) % galleryFiles.length;
-                openLightbox(currentIndex);
-            };
-
-            lightbox.onclick = e => {
-                if (e.target === lightbox) {
-                    lightbox.style.display = "none";
-                    document.getElementById("lightbox-inner").innerHTML = "";
-                }
-            };
-
-            document.addEventListener("keydown", e => {
-                if (lightbox.style.display === "flex") {
-                    if (e.key === "ArrowLeft") prevBtn.click();
-                    if (e.key === "ArrowRight") nextBtn.click();
-                    if (e.key === "Escape") closeBtn.click();
-                }
-            });
-        }
-
-        initFirebase();
-    </script>
-</body>
-
-</html>
+                document.getElementById("gdrive-list").innerHTML = "<p>
