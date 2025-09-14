@@ -61,10 +61,17 @@
             background-color: #ffeb3b;
             transition: all 0.2s;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            /* Consistent style */
+            border-top: 5px solid #f9a825;
+            transform: rotate(1deg);
         }
-        
+
+        .post-it:nth-child(even) {
+            transform: rotate(-1deg);
+        }
+
         .post-it:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) rotate(0deg);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
@@ -87,8 +94,9 @@
             opacity: 0.6;
             transition: opacity 0.2s;
         }
-        
-        .delete-btn:hover, .edit-btn:hover {
+
+        .delete-btn:hover,
+        .edit-btn:hover {
             opacity: 1;
         }
 
@@ -100,27 +108,31 @@
             background-color: #fff1f2;
             border-left: 5px solid #ef4444;
         }
-        
+
         .gdrive-container {
             margin: 20px 0;
         }
+
         .gdrive-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 16px;
         }
+
         .gdrive-item {
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             text-align: center;
             padding: 10px;
             transition: transform 0.2s ease;
         }
+
         .gdrive-item:hover {
             transform: translateY(-4px);
         }
+
         .gdrive-item img {
             max-width: 100%;
             height: 120px;
@@ -128,6 +140,7 @@
             border-radius: 6px;
             margin-bottom: 8px;
         }
+
         .gdrive-item a {
             text-decoration: none;
             color: #1a73e8;
@@ -143,18 +156,22 @@
             display: none;
             position: fixed;
             z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
             flex-direction: column;
         }
+
         .lightbox-content {
             max-width: 90%;
             max-height: 90%;
             position: relative;
         }
+
         .lightbox-content iframe,
         .lightbox-content img {
             width: 100%;
@@ -163,6 +180,7 @@
             border-radius: 8px;
             background: #fff;
         }
+
         .lightbox-close,
         .lightbox-prev,
         .lightbox-next {
@@ -175,15 +193,22 @@
             padding: 10px;
             user-select: none;
         }
+
         .lightbox-close {
             top: 20px;
             right: 30px;
             font-size: 32px;
             transform: none;
         }
-        .lightbox-prev { left: -60px; }
-        .lightbox-next { right: -60px; }
-        
+
+        .lightbox-prev {
+            left: -60px;
+        }
+
+        .lightbox-next {
+            right: -60px;
+        }
+
         /* New Calendar styles */
         .calendar-container {
             max-width: 800px;
@@ -194,12 +219,14 @@
             padding: 2rem;
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
+
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
+
         .calendar-nav-btn {
             background: none;
             border: none;
@@ -208,38 +235,46 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
+
         .calendar-nav-btn:hover {
             transform: scale(1.1);
         }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0.5rem;
             text-align: center;
         }
+
         .calendar-day-header {
             font-weight: 700;
             color: #6d28d9;
         }
+
         .calendar-day {
             padding: 0.5rem;
             border-radius: 0.5rem;
             transition: background-color 0.2s;
         }
+
         .calendar-day.current-month {
             background-color: #fce4ec;
             cursor: pointer;
         }
+
         .calendar-day.current-month:hover {
             background-color: #f8bbd0;
         }
+
         .calendar-day.has-reminder {
             font-weight: bold;
             color: white;
             background-color: var(--accent-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             position: relative;
         }
+
         .calendar-day.has-reminder:after {
             content: '';
             position: absolute;
@@ -251,13 +286,15 @@
             background-color: #ffeb3b;
             border-radius: 50%;
         }
+
         .calendar-day.has-reminder.current-month:hover {
             background-color: #c2185b;
         }
+
         .calendar-day.today {
             border: 2px solid var(--text-color);
         }
-        
+
         /* Modal styles */
         .modal {
             position: fixed;
@@ -271,6 +308,7 @@
             align-items: center;
             z-index: 50;
         }
+
         .modal-content {
             background-color: var(--primary-color);
             padding: 2rem;
@@ -281,6 +319,7 @@
             overflow-y: auto;
             position: relative;
         }
+
         .modal-close-btn {
             position: absolute;
             top: 1rem;
@@ -313,7 +352,7 @@
             <div class="card max-w-2xl mx-auto">
                 <h2 class="text-5xl font-bold mb-4 heading-font text-pink-700">My Dearest Geet Nuniwal,</h2>
                 <p class="text-lg mb-6">This little corner of the internet is dedicated entirely to you. It's a place to celebrate all the wonderful moments we share and to look forward to all the new ones. You are my everything, my muse, and my greatest adventure. Every part of this website is for you and about you.</p>
-                
+
                 <p class="text-sm mt-8">Your unique ID: <span id="userId" class="font-mono text-gray-600">Loading...</span></p>
             </div>
         </div>
@@ -351,7 +390,7 @@
                     <button type="submit" class="btn-primary self-center">Unlock Album</button>
                 </form>
             </div>
-            
+
             <div id="photoAlbumContent" class="hidden">
                 <div class="card mb-8">
                     <h2 class="text-4xl font-bold mb-4 heading-font text-pink-700">Private Photo Album</h2>
@@ -380,7 +419,7 @@
                 <p class="text-lg text-gray-700 mb-6">A place for birthdays, anniversaries, and other special reminders just for Geet.</p>
                 <button id="openReminderModal" class="btn-primary">Manage Reminders 🗓️</button>
             </div>
-            
+
             <div id="calendar-container" class="calendar-container">
                 <div class="calendar-header">
                     <button id="prev-month-btn" class="calendar-nav-btn">&#10094;</button>
@@ -414,7 +453,7 @@
                 <textarea id="reminderDetails" placeholder="Add more details here..." class="w-full p-4 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all resize-y" rows="3"></textarea>
                 <button type="submit" id="reminderFormBtn" class="btn-primary self-end">Add Reminder 🗓️</button>
             </form>
-            
+
             <h3 class="text-2xl font-bold mb-4">Upcoming Reminders</h3>
             <div id="remindersContainer" class="flex flex-col space-y-4">
                 <!-- Reminders will be rendered here -->
@@ -461,17 +500,17 @@
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                
+
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const userId = user.uid;
                         privatePath = `/artifacts/${hardcodedAppId}/public/data`;
-                        
+
                         document.getElementById('userId').textContent = userId;
                         console.log("User signed in with anonymous ID:", userId);
                         setupRealtimeListeners();
                         // Update countdown every minute for performance
-                        setInterval(updateReminderListCountdown, 60000); 
+                        setInterval(updateReminderListCountdown, 60000);
                     } else {
                         signInAnonymously(auth);
                     }
@@ -488,19 +527,25 @@
                 const postsContainer = document.getElementById('postsContainer');
                 // Use a DocumentFragment for efficient bulk DOM insertion
                 const fragment = document.createDocumentFragment();
-                snapshot.forEach((doc) => {
+                snapshot.forEach((doc, index) => {
                     const post = doc.data();
                     const postElement = document.createElement('div');
                     postElement.className = `post-it p-6 rounded-lg shadow-lg relative min-h-[150px]`;
-                    
+
                     const formattedText = marked.parse(post.text);
-                    
+
                     postElement.innerHTML = `
                         <div class="text-lg leading-relaxed text-gray-800">${formattedText}</div>
                         <span class="absolute bottom-2 left-2 text-xs text-gray-500">Posted by: Aditya</span>
                         <span class="absolute bottom-2 right-2 text-xs text-gray-500">${new Date(post.timestamp).toLocaleDateString()}</span>
                         <button class="delete-btn absolute top-2 right-2" onclick="deletePost('${doc.id}')">✖️</button>
                     `;
+                    // Add rotational class based on index
+                    if (index % 2 === 0) {
+                        postElement.style.transform = 'rotate(1deg)';
+                    } else {
+                        postElement.style.transform = 'rotate(-1deg)';
+                    }
                     fragment.appendChild(postElement);
                 });
                 // Clear and append in one go for better performance
@@ -514,7 +559,7 @@
                 snapshot.forEach((doc) => {
                     allReminders.push({ id: doc.id, ...doc.data() });
                 });
-                
+
                 updateReminderList();
                 updateCalendar();
             });
@@ -543,7 +588,7 @@
             reminderElements.forEach(async (element) => {
                 const docId = element.id.replace('reminder-list-item-', '');
                 const reminder = allReminders.find(r => r.id === docId);
-                
+
                 if (reminder) {
                     const reminderDate = new Date(reminder.date);
                     const diffTime = reminderDate.getTime() - today.getTime();
@@ -591,7 +636,10 @@
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
 
-            monthYearHeader.textContent = currentCalendarDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+            monthYearHeader.textContent = currentCalendarDate.toLocaleString('default', {
+                month: 'long',
+                year: 'numeric'
+            });
 
             // Clear old days, but keep day headers
             const dayCells = calendarGrid.querySelectorAll('.calendar-day');
@@ -633,7 +681,7 @@
         const showReminderDetails = (remindersJson) => {
             const detailsContainer = document.getElementById('reminder-details');
             detailsContainer.innerHTML = '';
-            
+
             if (remindersJson) {
                 const reminders = JSON.parse(remindersJson);
                 const list = document.createElement('ul');
@@ -653,7 +701,7 @@
                 detailsContainer.innerHTML = `<p class="text-gray-600">No special reminders on this day.</p>`;
             }
         };
-        
+
         document.getElementById('postForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const postText = document.getElementById('postText').value;
@@ -675,7 +723,7 @@
             const reminderDate = document.getElementById('reminderDate').value;
             const reminderDetails = document.getElementById('reminderDetails').value;
             if (reminderName.trim() === '' || reminderDate.trim() === '') return;
-            
+
             try {
                 if (editingReminderId) {
                     await updateDoc(doc(db, `${privatePath}/reminders`, editingReminderId), {
@@ -696,7 +744,7 @@
                 console.error("Error saving reminder:", error);
             }
         });
-        
+
         const resetReminderForm = () => {
             editingReminderId = null;
             document.getElementById('reminderName').value = '';
@@ -819,7 +867,7 @@
                     `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,thumbnailLink,iconLink)`
                 );
                 const data = await res.json();
-                
+
                 if (!data.files || data.files.length === 0) {
                     container.innerHTML = "<p>No files found in this folder.</p>";
                     return;
@@ -924,7 +972,7 @@
                 }
             });
         }
-        
+
         // This function sets up the navigation events using JavaScript
         const setupNavigationEvents = () => {
             document.querySelectorAll('nav a').forEach(link => {
